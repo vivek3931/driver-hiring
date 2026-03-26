@@ -1,5 +1,6 @@
 const Application = require('../models/Application');
 const Job = require('../models/Job');
+const DriverProfile = require('../models/DriverProfile');
 
 // @desc    Apply for a job
 // @route   POST /api/applications/:jobId
@@ -11,6 +12,25 @@ const applyForJob = async (req, res) => {
         if (!job) {
             res.status(404);
             throw new Error('Job not found');
+        }
+
+        // Check if driver profile is complete
+        const profile = await DriverProfile.findOne({ user: req.user.id });
+        if (!profile) {
+            res.status(400);
+            throw new Error('Please create your driver profile before applying');
+        }
+
+        const isProfileComplete = profile.phone && 
+                                 profile.location && 
+                                 profile.drivingLicense && 
+                                 profile.drivingLicense.number && 
+                                 profile.vehicleTypes && 
+                                 profile.vehicleTypes.length > 0;
+
+        if (!isProfileComplete) {
+            res.status(400);
+            throw new Error('Please complete your profile (Phone, Location, Driving License, and Vehicle Types) before applying');
         }
 
         // Check if already applied
@@ -99,9 +119,48 @@ const updateApplicationStatus = async (req, res) => {
     }
 };
 
+// @desc    Get driver statistics
+// @route   GET /api/applications/driver/stats
+// @access  Private/Driver
+const getDriverStats = async (req, res) => {
+    try {
+        const total = await Application.countDocuments({ driver: req.user.id });
+        const accepted = await Application.countDocuments({ driver: req.user.id, status: 'Accepted' });
+        const rejected = await Application.countDocuments({ driver: req.user.id, status: 'Rejected' });
+        const pending = await Application.countDocuments({ driver: req.user.id, status: { $in: ['Applied', 'Pending'] } });
+
+        res.json({
+            total,
+            accepted,
+            rejected,
+            pending
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get all applications for recruiter's jobs
+// @route   GET /api/applications/recruiter/all
+// @access  Private/Recruiter
+const getRecruiterApplications = async (req, res) => {
+    try {
+        const applications = await Application.find({ recruiter: req.user.id })
+            .populate('driver', ['name', 'email'])
+            .populate('job', ['title', 'location'])
+            .sort({ createdAt: -1 });
+
+        res.json(applications);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     applyForJob,
     getMyApplications,
     getJobApplications,
-    updateApplicationStatus
+    updateApplicationStatus,
+    getDriverStats,
+    getRecruiterApplications
 };

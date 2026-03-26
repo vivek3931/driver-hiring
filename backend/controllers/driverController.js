@@ -29,8 +29,24 @@ const updateDriverProfile = async (req, res) => {
         }
 
         // Prepare fields to update
-        const updateFields = { ...req.body };
-        delete updateFields.user; // Don't allow changing user ID
+        const { drivingLicense, aadhaar, ...rest } = req.body;
+        const updateFields = { ...rest };
+
+        // Handle nested drivingLicense
+        if (drivingLicense) {
+            updateFields.drivingLicense = {
+                ...profile.drivingLicense,
+                ...drivingLicense
+            };
+        }
+
+        // Handle nested aadhaar
+        if (aadhaar) {
+            updateFields.aadhaar = {
+                ...profile.aadhaar,
+                ...aadhaar
+            };
+        }
 
         // If there were files uploaded
         if (req.files) {
@@ -39,15 +55,13 @@ const updateDriverProfile = async (req, res) => {
             }
             if (req.files.drivingLicenseDoc) {
                 updateFields.drivingLicense = {
-                    ...profile.drivingLicense,
-                    ...(req.body.drivingLicense || {}),
+                    ...(updateFields.drivingLicense || profile.drivingLicense),
                     documentUrl: `/uploads/${req.files.drivingLicenseDoc[0].filename}`
                 };
             }
             if (req.files.aadhaarDoc) {
                 updateFields.aadhaar = {
-                    ...profile.aadhaar,
-                    ...(req.body.aadhaar || {}),
+                    ...(updateFields.aadhaar || profile.aadhaar),
                     documentUrl: `/uploads/${req.files.aadhaarDoc[0].filename}`
                 };
             }

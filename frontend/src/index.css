@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,27 +6,82 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    background: #fdfdfd;
+    color: theme('colors.surface.950');
+    @apply font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight font-bold text-surface-950;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer components {
+  /* Uber-style High Contrast Button */
   .btn-primary {
-    @apply bg-navy-900 text-white px-6 py-2.5 rounded-md font-medium hover:bg-navy-800 transition-colors shadow-sm;
+    @apply bg-surface-950 text-white px-8 py-4 rounded-uber font-bold active:scale-[0.98] transition-all 
+           hover:bg-surface-900 shadow-uber flex items-center justify-center gap-3 text-sm uppercase tracking-widest;
   }
+  
+  /* Ola-style Vibrant Button */
+  .btn-vibrant {
+    @apply bg-primary-600 text-white px-8 py-4 rounded-ola font-bold active:scale-[0.98] transition-all 
+           hover:bg-primary-700 shadow-soft flex items-center justify-center gap-2;
+  }
+
+  /* Minimal Secondary */
   .btn-secondary {
-    @apply bg-white text-navy-900 border border-slate-200 px-6 py-2.5 rounded-md font-medium hover:bg-slate-50 transition-colors shadow-sm;
+    @apply bg-surface-100 text-surface-950 px-8 py-4 rounded-uber font-bold 
+           active:scale-[0.98] transition-all hover:bg-surface-200 flex items-center justify-center gap-2 border border-surface-200/50;
   }
-  .btn-success {
-    @apply bg-emerald-600 text-white px-6 py-2.5 rounded-md font-medium hover:bg-emerald-500 transition-colors shadow-sm;
+  
+  /* The Modern App Card */
+  .app-card {
+    @apply bg-white rounded-uber border border-surface-100/80 shadow-soft transition-all duration-300 hover:shadow-uber overflow-hidden;
   }
-  .card {
-    @apply bg-white rounded-lg shadow-soft border border-slate-100 overflow-hidden;
-  }
+
+  /* Input Field - Minimalist */
   .input-field {
-    @apply w-full px-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy-900 focus:border-transparent transition-shadow disabled:bg-slate-50 disabled:text-slate-500;
+    @apply w-full px-6 py-4 rounded-xl bg-surface-50 border border-surface-200 focus:outline-none 
+           focus:ring-0 focus:border-surface-950 focus:bg-white transition-all font-medium text-surface-800 placeholder:text-surface-400;
   }
+
   .label-text {
-    @apply block text-sm font-medium text-charcoal mb-1;
+    @apply block text-[11px] font-bold uppercase tracking-[0.15em] mb-2.5 text-surface-400;
   }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-full text-surface-600 font-semibold transition-all hover:bg-surface-100 hover:text-surface-950 flex items-center gap-2 text-sm;
+  }
+}
+
+/* Custom Utilities */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-surface-950 to-surface-700;
+}
+
+.map-gradient {
+  background: radial-gradient(circle at top right, rgba(29, 78, 216, 0.03), transparent),
+              radial-gradient(circle at bottom left, rgba(29, 78, 216, 0.03), transparent);
+}
+
+.shadow-uber-heavy {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #e2e2e7;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d1d6;
 }

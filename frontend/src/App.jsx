@@ -14,6 +14,10 @@ import Jobs from './pages/Jobs';
 import JobDetails from './pages/JobDetails';
 import DriverProfile from './pages/DriverProfile';
 import PostJob from './pages/PostJob';
+import ManageJobs from './pages/ManageJobs';
+import MyApplications from './pages/MyApplications';
+import JobApplicants from './pages/JobApplicants';
+import AllApplicants from './pages/AllApplicants';
 import About from './pages/About';
 import Footer from './components/Footer';
 
@@ -37,13 +41,16 @@ function App() {
             <Route element={<ProtectedRoute allowedRoles={['driver']} />}>
               <Route path="/driver/dashboard" element={<DriverDashboard />} />
               <Route path="/driver/profile" element={<DriverProfile />} />
+              <Route path="/driver/applications" element={<MyApplications />} />
             </Route>
 
             {/* Recruiter Routes */}
             <Route element={<ProtectedRoute allowedRoles={['recruiter']} />}>
               <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
               <Route path="/recruiter/jobs/new" element={<PostJob />} />
-              <Route path="/recruiter/jobs" element={<div className="p-8 text-center text-xl">Manage Jobs</div>} />
+              <Route path="/recruiter/jobs" element={<ManageJobs />} />
+              <Route path="/recruiter/jobs/:jobId/applicants" element={<JobApplicants />} />
+              <Route path="/recruiter/applicants" element={<AllApplicants />} />
             </Route>
 
             {/* Admin Routes */}

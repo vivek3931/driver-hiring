@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const DriverProfile = require('../models/DriverProfile');
 const RecruiterProfile = require('../models/RecruiterProfile');
+const Job = require('../models/Job');
+const Application = require('../models/Application');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
 
@@ -103,8 +105,32 @@ const getMe = async (req, res) => {
     res.status(200).json(user);
 };
 
+// @desc    Get system statistics
+// @route   GET /api/auth/admin/stats
+// @access  Private/Admin
+const getAdminStats = async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const activeJobs = await Job.countDocuments({ status: 'Open' });
+        const totalApplications = await Application.countDocuments();
+        
+        // Simulating pending verifications
+        const pendingVerifications = await User.countDocuments({ role: { $in: ['driver', 'recruiter'] } });
+
+        res.json({
+            totalUsers,
+            activeJobs,
+            totalApplications,
+            pendingVerifications: Math.floor(pendingVerifications / 5) // Just for UI demo of "work to do"
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getMe,
+    getAdminStats
 };

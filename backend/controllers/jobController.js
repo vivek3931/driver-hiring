@@ -1,4 +1,5 @@
 const Job = require('../models/Job');
+const Application = require('../models/Application');
 
 // @desc    Get all jobs (with filtering)
 // @route   GET /api/jobs
@@ -79,9 +80,71 @@ const updateJob = async (req, res) => {
     }
 };
 
+// @desc    Get recruiter's jobs
+// @route   GET /api/jobs/recruiter/my
+// @access  Private/Recruiter
+const getRecruiterJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find({ recruiter: req.user.id });
+        res.json(jobs);
+    } catch (error) {
+        res.status(res.statusCode || 500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete a job
+// @route   DELETE /api/jobs/:id
+// @access  Private/Recruiter
+const deleteJob = async (req, res) => {
+    try {
+        const job = await Job.findById(req.params.id);
+
+        if (!job) {
+            res.status(404);
+            throw new Error('Job not found');
+        }
+
+        if (job.recruiter.toString() !== req.user.id) {
+            res.status(401);
+            throw new Error('Not authorized');
+        }
+
+        await job.deleteOne();
+        res.json({ message: 'Job removed' });
+    } catch (error) {
+        res.status(res.statusCode || 500).json({ message: error.message });
+    }
+};
+
+// @desc    Get recruiter statistics
+// @route   GET /api/jobs/recruiter/stats
+// @access  Private/Recruiter
+const getRecruiterStats = async (req, res) => {
+    try {
+        const activeJobsCount = await Job.countDocuments({ recruiter: req.user.id, status: 'Open' });
+        
+        // Complex aggregation for total applicants
+        const totalApplicants = await Application.countDocuments({ recruiter: req.user.id });
+        const shortlistedCount = await Application.countDocuments({ recruiter: req.user.id, status: 'Shortlisted' });
+        const acceptedCount = await Application.countDocuments({ recruiter: req.user.id, status: 'Accepted' });
+
+        res.json({
+            activeJobs: activeJobsCount,
+            totalApplicants,
+            shortlisted: shortlistedCount,
+            accepted: acceptedCount
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getJobs,
     getJobById,
     createJob,
-    updateJob
+    updateJob,
+    getRecruiterJobs,
+    deleteJob,
+    getRecruiterStats
 };

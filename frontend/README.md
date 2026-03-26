@@ -1,4 +1,11 @@
-# React + Vite
+[plugin:vite:css] [postcss] D:/driver-hiring/frontend/src/index.css:3:1: The `bg-surface-50` class does not exist. If `bg-surface-50` is a custom class, make sure it is defined within a `@layer` directive.
+D:/driver-hiring/frontend/src/index.css:3:0
+1  |  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+2  |  
+3  |  @tailwind base;
+   |  ^
+4  |  @tailwind components;
+5  |  @tailwind utilities;# React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
